@@ -1,0 +1,21 @@
+{
+  "name": "copy-image-text",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "copy-image-text": "file:",
+    "jimp": "^0.16.13",
+    "tesseract.js": "^6.0.0"
+  },
+  "devDependencies": {
+    "electron": "^34.1.1"
+  }
+}

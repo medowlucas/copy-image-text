@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR com Tesseract</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        #imageArea {
+            width: 100%;
+            height: 300px;
+            border: 2px dashed #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #fff;
+            margin-bottom: 20px;
+            border-radius: 10px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            margin-top: 20px;
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 1rem;
+            resize: none;
+            border: 1px solid #ddd;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            font-family: monospace;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 12px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        button:active {
+            background-color: #3e8e41;
+        }
+    </style>
+</head>
+<body>
+    <h1>OCR com Tesseract.js</h1>
+    <p>Pressione Ctrl+V ou arraste uma imagem para processar.</p>
+
+    <!-- Área para colar ou arrastar imagens -->
+    <div id="imageArea">
+        <p>Arraste ou cole uma imagem aqui</p>
+    </div>
+
+    <!-- Área para mostrar o texto extraído -->
+    <textarea id="textOutput" placeholder="Texto extraído aparecerá aqui..."></textarea>
+
+    <!-- Botão para copiar o texto extraído -->
+    <button id="copyButton">Copiar Texto</button>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+        const imageArea = document.getElementById('imageArea');
+        const textOutput = document.getElementById('textOutput');
+        const copyButton = document.getElementById('copyButton');
+
+        // Captura a imagem copiada (Ctrl+V)
+        imageArea.addEventListener('paste', async (event) => {
+            const items = (event.clipboardData || event.originalEvent.clipboardData).items;
+            for (const item of items) {
+                if (item.type.indexOf('image') !== -1) {
+                    const file = item.getAsFile();
+                    const reader = new FileReader();
+
+                    reader.onload = (event) => {
+                        const imgDataUrl = event.target.result; // Data URL da imagem
+                        // Envia o Data URL da imagem para o backend
+                        ipcRenderer.send('process-image', imgDataUrl);
+                    };
+
+                    reader.readAsDataURL(file);
+                    break; // A imagem foi processada, não precisa continuar
+                }
+            }
+        });
+
+        // Arraste e solte a imagem
+        imageArea.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            imageArea.style.border = '2px solid #000';
+        });
+
+        imageArea.addEventListener('dragleave', () => {
+            imageArea.style.border = '2px dashed #ccc';
+        });
+
+        imageArea.addEventListener('drop', (event) => {
+            event.preventDefault();
+            const file = event.dataTransfer.files[0];
+            const reader = new FileReader();
+
+            reader.onload = (event) => {
+                const imgDataUrl = event.target.result;
+                ipcRenderer.send('process-image', imgDataUrl); // Envia o Data URL da imagem para o backend
+            };
+
+            reader.readAsDataURL(file);
+        });
+
+        // Recebe o texto extraído e exibe na área de texto
+        ipcRenderer.on('ocr-result', (event, resultText) => {
+            textOutput.value = resultText;
+        });
+
+        // Função para copiar o texto para a área de transferência
+        copyButton.addEventListener('click', () => {
+            textOutput.select();
+            document.execCommand('copy');
+        });
+    </script>
+</body>
+</html>
