@@ -24,11 +24,7 @@ O aplicativo será iniciado e você poderá colar ou arrastar imagens para extra
 
 ## 📷 Interface do Aplicativo
 
-![Copy Image Text](projeto.png)  
-*(Substitua `path/to/screenshot.png` pelo caminho real da imagem do projeto final.)*
-
-
-Isso gerará um executável que pode ser distribuído para qualquer usuário sem necessidade de instalação de dependências adicionais.
+![Copy Image Text](projeto.png)
 
 ## 🛠 Tecnologias Utilizadas
 
@@ -42,6 +38,7 @@ Sinta-se à vontade para contribuir com melhorias, abrindo issues ou enviando pu
 
 ---
 
-📌 **Autor:** Lucas Guilha 
+📌 **Autor:** Lucas Guilha
+
 📅 **Última atualização:** 02/2025
 
